@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/InspectionVisits.API/bin/Debug/net8.0
+/InspectionVisits.API/logs
+/InspectionVisits.API/obj
+/InspectionVisits.Application/bin/Debug/net8.0
+/InspectionVisits.Application/obj
+/InspectionVisits.Domain/bin/Debug/net8.0
+/InspectionVisits.Domain/obj
+/InspectionVisits.Repository/bin/Debug/net8.0
+/InspectionVisits.Repository/obj
