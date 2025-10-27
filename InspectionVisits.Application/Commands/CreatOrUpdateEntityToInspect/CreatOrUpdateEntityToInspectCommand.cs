@@ -50,7 +50,7 @@ namespace InspectionVisits.Application.Commands.CreatOrUpdateEntityToInspect
                 if (entityToinsepect is null)
                     return new ApiResponse<bool>(false);
 
-                entityToinsepect.Updae(request.Name, request.Address, request.Category);
+                entityToinsepect.Update(request.Name, request.Address, request.Category);
                 entityToInspectRepository.Update(entityToinsepect);
             }
 

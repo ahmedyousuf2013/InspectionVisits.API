@@ -1,7 +1,9 @@
+using InspectionVisits.API;
 using InspectionVisits.Application;
 using InspectionVisits.Application.Commands;
 using InspectionVisits.Application.Commands.CreatOrUpdateEntityToInspect;
 using InspectionVisits.Application.Profiles;
+using InspectionVisits.Domain;
 using InspectionVisits.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +14,20 @@ using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("allowCros", policy =>
+    {
+        policy.WithOrigins(builder.Configuration["AllowedHosts"])
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin();
+    });
+});
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 // Add services
 builder.Services.AddControllers();
@@ -58,6 +74,11 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+
+app.UseCors("allowCros");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSerilogRequestLogging();
 
@@ -76,11 +97,11 @@ app.MapControllers();
 
     var roleManager = app.Services.CreateScope().ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-if (!await roleManager.RoleExistsAsync("Admin"))
-    await roleManager.CreateAsync(new IdentityRole("Admin"));
+if (!await roleManager.RoleExistsAsync(Constants.Roles.Admin))
+    await roleManager.CreateAsync(new IdentityRole(Constants.Roles.Admin));
 
-if (!await roleManager.RoleExistsAsync("Inspector"))
-    await roleManager.CreateAsync(new IdentityRole("Inspector"));
+if (!await roleManager.RoleExistsAsync(Constants.Roles.Inspector))
+    await roleManager.CreateAsync(new IdentityRole(Constants.Roles.Inspector));
 
 var userManager = app.Services.CreateScope().ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -88,7 +109,7 @@ if (!await userManager.Users.AnyAsync(x => x.UserName == "admin"))
 {
     var user = await userManager.CreateAsync(new ApplicationUser { UserName = "admin" }, "P@ssw0rd");
 
-    await userManager.AddToRoleAsync(new ApplicationUser { UserName = "admin", Email = "admin@gmail.com" }, "Admin");
+    await userManager.AddToRoleAsync(new ApplicationUser { UserName = "admin", Email = "admin@gmail.com" }, Constants.Roles.Admin);
 }
 
 app.Run();

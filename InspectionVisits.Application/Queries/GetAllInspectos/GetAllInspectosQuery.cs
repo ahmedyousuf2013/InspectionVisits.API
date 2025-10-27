@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace InspectionVisits.Application.Queries.GetAllInspectos
 {
-    public record GetAllInspectosQuery(int pageIndex, int PageSize) : IRequest<ApiResponse<IEnumerable<InspectorDto>>>;
+    public record GetAllInspectosQuery() : IRequest<ApiResponse<IEnumerable<InspectorDto>>>;
 
     public class GetAllInspectosQueryHandler : IRequestHandler<GetAllInspectosQuery, ApiResponse<IEnumerable<InspectorDto>>>
     {
@@ -29,7 +29,7 @@ namespace InspectionVisits.Application.Queries.GetAllInspectos
 
 
 
-            var result = await entityToInspectRepository.GetAllInspectors(request.pageIndex, request.PageSize);
+            var result = await entityToInspectRepository.GetAllInspectors(0, int.MaxValue);
 
             if (!result.Any())
 

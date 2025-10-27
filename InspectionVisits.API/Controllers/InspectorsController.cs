@@ -21,9 +21,9 @@ namespace InspectionVisits.API.Controllers
 
 
         [HttpPost("get-all-inspectosquery")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<InspectorDto>>>> GetAllInspectosQuery(GetAllInspectosQuery command)
+        public async Task<ActionResult<ApiResponse<IEnumerable<InspectorDto>>>> GetAllInspectosQuery()
         {
-            var result = await mediator.Send(command);
+            var result = await mediator.Send(new GetAllInspectosQuery { } );
 
             return Ok(result);
         }

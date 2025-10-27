@@ -3,7 +3,9 @@ using InspectionVisits.Application.Commands.DeletEntityToInspect;
 using InspectionVisits.Application.DTo;
 using InspectionVisits.Application.Queries.GetAllEntityToInsepect;
 using InspectionVisits.Application.Queries.GetEntityToInsepectById;
+using InspectionVisits.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ namespace InspectionVisits.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(Roles = Constants.Roles.Admin)]
     public class EntityToInspectController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -50,8 +53,10 @@ namespace InspectionVisits.API.Controllers
         }
 
         [HttpPost("getall-entityto-insepectquery")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<EntityToInspectDto>>>> GetAllEntityToInsepectQuery( GetAllEntityToInsepectQuery command)
+        public async Task<ActionResult<ApiResponse<IEnumerable<EntityToInspectDto>>>> GetAllEntityToInsepectQuery( )
         {
+            var command = new GetAllEntityToInsepectQuery(0, int.MaxValue);
+          
             var result = await mediator.Send(command);
 
             return Ok(result);

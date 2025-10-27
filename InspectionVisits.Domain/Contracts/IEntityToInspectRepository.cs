@@ -16,6 +16,7 @@ namespace InspectionVisits.Domain.Contracts
 
         public Task<IEnumerable<Inspector>> GetAllInspectors(int pageIndex, int PageSize);
         public Task<InspectionVisit> GetInspectionVisit(int entityToInspectId, int inspectorId);
+        public  Task<InspectionVisit> GetInspectionVistById(int inspectionVisitid);
 
 
 

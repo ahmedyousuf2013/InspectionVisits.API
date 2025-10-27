@@ -1,5 +1,6 @@
 ﻿using InspectionVisits.Application.Commands.AddInspectionVist;
 using InspectionVisits.Application.Commands.AddVaiolations;
+using InspectionVisits.Application.Commands.UpdateInspectionVisiStatus;
 using InspectionVisits.Application.DTo;
 using InspectionVisits.Application.Queries.GetAllEntityToInsepect;
 using InspectionVisits.Application.Queries.GetAllIspectionsVisits;
@@ -38,9 +39,17 @@ namespace InspectionVisits.API.Controllers
         }
 
         [HttpPost("getall-ispections-visits")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<InspectionVisitDto>>>> GetAllIspectionsVisits(GetAllIspectionsVisitsQuery command)
+        public async Task<ActionResult<ApiResponse<IEnumerable<InspectionVisitDto>>>> GetAllIspectionsVisits(InspectVisitDToCriteria command)
         {
-            var result = await mediator.Send(command);
+            var result = await mediator.Send(new GetAllIspectionsVisitsQuery {  criteria=command});
+
+            return Ok(result);
+        }
+
+        [HttpPost("update-inspection-viststatus")]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateInspectionVistStatus(UpdateInspectionVisitStausCommand command)
+        {
+            var result = await mediator.Send(command); ;
 
             return Ok(result);
         }

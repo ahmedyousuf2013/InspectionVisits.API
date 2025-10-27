@@ -15,7 +15,7 @@ namespace InspectionVisits.Domain.Aggregate.InspectionAggregate
 
         public virtual List<InspectionVisit> InspectionVisits { get; set; }=new List<InspectionVisit>();
 
-        public void Updae(string name, string address, string Category)
+        public void Update(string name, string address, string Category)
         {
             this.Name = name;
             this.Address = address;

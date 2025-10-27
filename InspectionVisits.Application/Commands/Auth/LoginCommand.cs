@@ -15,7 +15,7 @@ namespace InspectionVisits.Application.Commands.Auth
 {
     public class LoginCommand :IRequest<ApiResponse<LoginResult>>
     {
-        public string Email { get; set; }
+        public string UserName { get; set; }
         public string Password { get; set; }
     }
 
@@ -35,7 +35,7 @@ namespace InspectionVisits.Application.Commands.Auth
         }
         public async Task<ApiResponse<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByNameAsync(request.Email);
+            var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
                 return new ApiResponse<LoginResult>(new List<string>(), "");
 

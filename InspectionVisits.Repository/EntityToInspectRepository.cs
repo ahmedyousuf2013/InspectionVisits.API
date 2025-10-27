@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static InspectionVisits.Domain.Enums;
 using InspectionVisits.Application.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace InspectionVisits.Repository
 {
@@ -39,6 +40,7 @@ namespace InspectionVisits.Repository
 
                          select new InspectionVisitDto
                          {
+                             Id = visits.Id,
                              Status = visits.Status,
                              EntityToInspe = visits.EntityToInspect.Name,
                              InspectorName = visits.Inspector.FullName,
@@ -47,14 +49,15 @@ namespace InspectionVisits.Repository
                              Score = visits.Score,
                              EntityToInspectId = visits.EntityToInspect.Id,
                              InspectorId = visits.Inspector.Id,
-                             category=entity.Category
+                             category = entity.Category,
+                             Starusstring=visits.Status.ToString(),
                          }).AsQueryable();
 
 
             query = query.WhereIf(criteria.from.HasValue, x => x.ScheduledAt >= criteria.from.Value);
             query = query.WhereIf(criteria.to.HasValue, x => x.ScheduledAt <= criteria.to.Value);
             query = query.WhereIf(criteria.inspectorId.HasValue, x => x.EntityToInspectId == criteria.inspectorId.Value);
-            query = query.WhereIf(!string.IsNullOrEmpty(criteria.category), x => criteria.category.Contains( x.category));
+            query = query.WhereIf(!string.IsNullOrEmpty(criteria.category), x => criteria.category.Contains(x.category));
 
             return query.AsEnumerable();
         }
@@ -76,6 +79,9 @@ namespace InspectionVisits.Repository
 
             return reuslt;
         }
-
+        public async Task<InspectionVisit> GetInspectionVistById(int inspectionVisitid)
+        {
+            return await this.dbContext.InspectionVisits.Where(x => x.Id == inspectionVisitid).FirstOrDefaultAsync();
+        }
     }
 }

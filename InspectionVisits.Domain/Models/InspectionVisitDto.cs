@@ -12,12 +12,14 @@ namespace InspectionVisits.Application.DTo
 {
     public class InspectionVisitDto
     {
+        public int Id { get; set; }
         public string EntityToInspe { get; set; }
         public int EntityToInspectId { get; set; }
         public string InspectorName { get; set; }
         public int InspectorId { get; set; }
 
         public DateTime ScheduledAt { get; set; }
+        public string Starusstring { get; set; }
         public Status Status { get; set; }
 
         [Range(0, 100)]
