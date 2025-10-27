@@ -57,8 +57,10 @@ namespace InspectionVisits.Repository
 
             query = query.WhereIf(criteria.from.HasValue, x => x.ScheduledAt >= criteria.from.Value);
             query = query.WhereIf(criteria.to.HasValue, x => x.ScheduledAt <= criteria.to.Value);
-            query = query.WhereIf(criteria.inspectorId.HasValue, x => x.EntityToInspectId == criteria.inspectorId.Value);
-            query = query.WhereIf(!string.IsNullOrEmpty(criteria.category), x => criteria.category.Contains(x.category));
+            query = query.WhereIf(criteria.inspectorId.HasValue, x => x.InspectorId == criteria.inspectorId.Value);
+            query = query.WhereIf(criteria.Status.HasValue, x => x.Status == criteria.Status);
+            query = query.WhereIf(!string.IsNullOrEmpty(criteria.category), x => x.category.Contains(criteria.category));
+
 
             return query.AsEnumerable();
         }
