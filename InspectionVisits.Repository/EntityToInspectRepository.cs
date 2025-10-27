@@ -1,14 +1,15 @@
 ﻿using InspectionVisits.Application.DTo;
+using InspectionVisits.Application.Extensions;
 using InspectionVisits.Domain.Aggregate.InspectionAggregate;
 using InspectionVisits.Domain.Contracts;
+using InspectionVisits.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static InspectionVisits.Domain.Enums;
-using InspectionVisits.Application.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace InspectionVisits.Repository
 {
@@ -82,6 +83,45 @@ namespace InspectionVisits.Repository
         public async Task<InspectionVisit> GetInspectionVistById(int inspectionVisitid)
         {
             return await this.dbContext.InspectionVisits.Where(x => x.Id == inspectionVisitid).FirstOrDefaultAsync();
+        }
+
+
+       
+
+        public InspectionDashboardDto GetInspectionDashboard()
+        {
+            // تحديد بداية ونهاية الشهر الحالي
+            var now = DateTime.Now;
+            var startOfMonth = new DateTime(now.Year, now.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            // جلب الزيارات الخاصة بالشهر الحالي
+            var visits = dbContext.InspectionVisits
+                .Include(v => v.EntityToInspect)
+                .Include(v => v.Inspector)
+                .Where(v => v.ScheduledAt >= startOfMonth && v.ScheduledAt <= endOfMonth);
+
+            // تجميع عدد الزيارات لكل حالة
+            var countsByStatus = visits
+                .GroupBy(v => v.Status)
+                .Select(g => new StatusCountDto
+                {
+                    Status = g.Key.ToString(),
+                    Count = g.Count()
+                })
+                .ToList();
+
+            // حساب متوسط Score
+            var averageScore = visits.Any() ? visits.Average(v => v.Score) : 0;
+
+            // بناء DTO النهائي
+            var dashboard = new InspectionDashboardDto
+            {
+                CountsByStatus = countsByStatus,
+                AverageScore = Math.Round(averageScore, 2)
+            };
+
+            return dashboard;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using InspectionVisits.Application.DTo;
 using InspectionVisits.Domain.Aggregate.InspectionAggregate;
+using InspectionVisits.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace InspectionVisits.Domain.Contracts
         public Task<IEnumerable<Inspector>> GetAllInspectors(int pageIndex, int PageSize);
         public Task<InspectionVisit> GetInspectionVisit(int entityToInspectId, int inspectorId);
         public  Task<InspectionVisit> GetInspectionVistById(int inspectionVisitid);
+
+        public InspectionDashboardDto GetInspectionDashboard();
 
 
 

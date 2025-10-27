@@ -4,10 +4,13 @@ using InspectionVisits.Application.Commands.UpdateInspectionVisiStatus;
 using InspectionVisits.Application.DTo;
 using InspectionVisits.Application.Queries.GetAllEntityToInsepect;
 using InspectionVisits.Application.Queries.GetAllIspectionsVisits;
+using InspectionVisits.Application.Queries.GetDashBoard;
+using InspectionVisits.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace InspectionVisits.API.Controllers
 {
@@ -51,6 +54,13 @@ namespace InspectionVisits.API.Controllers
         {
             var result = await mediator.Send(command); ;
 
+            return Ok(result);
+        }
+
+        [HttpGet("get-dashboard")]
+        public async Task<ActionResult<ApiResponse<InspectionDashboardDto>>>  GetDashboard()
+        {
+            var result = await mediator.Send(new GetDashBoardQuery()); ;
             return Ok(result);
         }
     }

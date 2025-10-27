@@ -1,4 +1,4 @@
-using InspectionVisits.API;
+﻿using InspectionVisits.API;
 using InspectionVisits.Application;
 using InspectionVisits.Application.Commands;
 using InspectionVisits.Application.Commands.CreatOrUpdateEntityToInspect;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 
@@ -32,7 +33,37 @@ builder.Services.AddProblemDetails();
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+
+
+
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "InspectionVisits API", Version = "v1" });
+
+    // 🧠 تعريف الـ Security Scheme (Bearer Token)
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // 🧠 تفعيل الـ Authorization في Swagger
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            new string[] { }
+        }
+    });
+});
+
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
      .WriteTo.Console()
 
@@ -77,6 +108,7 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 app.UseCors("allowCros");
+app.UseMiddleware<JwtValidationMiddleware>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
