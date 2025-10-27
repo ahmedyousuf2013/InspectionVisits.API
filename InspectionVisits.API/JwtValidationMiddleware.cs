@@ -8,43 +8,58 @@ namespace InspectionVisits.API
     {
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
+        private readonly JwtSecurityTokenHandler _handler = new();
+        private readonly TokenValidationParameters _validationParameters;
 
         public JwtValidationMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
             _configuration = configuration;
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            _validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidIssuer = _configuration["JWT:Issuer"],
+                ValidAudience = _configuration["JWT:Audience"],
+                // ClockSkew = TimeSpan.Zero
+            };
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            
+            
+var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(authHeader))
             {
-                try
+                // Extract raw token if header uses "Bearer <token>"
+                const string bearerPrefix = "Bearer ";
+                var token = authHeader.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase)
+                    ? authHeader.Substring(bearerPrefix.Length).Trim()
+                    : authHeader.Trim();
+
+                if (!string.IsNullOrEmpty(token))
                 {
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-                    var handler = new JwtSecurityTokenHandler();
-                    handler.ValidateToken(token, new TokenValidationParameters
+                    try
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidIssuer = _configuration["JWT:Issuer"],
-                        ValidAudience = _configuration["JWT:Audience"],
-                        ClockSkew = TimeSpan.Zero
-                    }, out SecurityToken validatedToken);
-                }
-                catch (Exception ex)
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    await context.Response.WriteAsync($"Invalid or expired token: {ex.Message}");
-                    return;
+                        _handler.ValidateToken(token, _validationParameters, out SecurityToken validatedToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsync($"Invalid or expired token: {ex.Message}");
+                        return;
+                    }
                 }
             }
 
             await _next(context);
         }
     }
+
 }
