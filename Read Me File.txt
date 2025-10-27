@@ -1,0 +1,15 @@
+This Project 
+
+
+We Use DDD , CQRS and Repository Design Pattern
+
+You Can Login Using 
+
+
+username :  admin 
+password:  P@ssw0rd
+
+
+
+
+
