@@ -42,7 +42,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "InspectionVisits API", Version = "v1" });
 
-    // 🧠 تعريف الـ Security Scheme (Bearer Token)
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -52,7 +51,6 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer"
     });
 
-    // 🧠 تفعيل الـ Authorization في Swagger
     c.AddSecurityRequirement(new OpenApiSecurityRequirement {
         {
             new OpenApiSecurityScheme

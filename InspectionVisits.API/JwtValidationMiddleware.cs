@@ -31,9 +31,9 @@ namespace InspectionVisits.API
 
         public async Task Invoke(HttpContext context)
         {
-            
-            
-var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+
+
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
             if (!string.IsNullOrEmpty(authHeader))
             {
